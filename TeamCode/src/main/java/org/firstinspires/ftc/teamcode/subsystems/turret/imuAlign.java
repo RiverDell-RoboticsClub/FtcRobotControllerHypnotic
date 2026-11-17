@@ -1,18 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems.turret;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
-import static java.lang.Math.abs;
-
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
-
-public class imuAlign {
+public class ImuAlign {
     private double yShoot;
     private double xShoot;
     private double angleShoot;
-
-    public void update(double xPos, double yPos, double angle, boolean blue) {
-        if (yPos > 72){
+    private double distanceToTarget;
+    private static double distanceToRPMConstant = 100;
+    public void update(double xPos, double yPos, double angle, boolean blue){
+        if (yPos>72){
             yShoot = 60;
         }
         else{
@@ -24,7 +19,28 @@ public class imuAlign {
         else{
             xShoot = 60;
         }
-        angleShoot=Math.atan2(abs(xPos-xShoot),abs(yPos-yShoot));
-
+        double xOffset = xPos-xShoot;
+        double yOffset = yPos-yShoot;
+        angleShoot=Math.atan2(Math.abs(xOffset),Math.abs(yOffset));
+        distanceToTarget = Math.hypot(xOffset, yOffset);
+    }
+    public double target(){
+        return distanceToTarget*distanceToRPMConstant;
+    }
+    public double getTurretAngle(){
+        return angleShoot*(93/130);
     }
 }
+
+/*
+        // Define goal's position
+        double targetX = 10;
+        double targetY = 138;
+
+        // Calculate x/y offsets from goal
+        double xOffset = targetX - xPos;
+        double yOffset = targetY - yPos;
+
+        // Determine distance to goal
+        double distanceToTarget = Math.hypot(xOffset, yOffset);
+       */
