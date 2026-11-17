@@ -13,9 +13,10 @@ import static com.pedropathing.ivy.commands.Commands.*;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 @Autonomous(name = "AutoPath", group = "Autonomous")
-public class redPedroAuto {
+public class redPedroAuto extends OpMode{
 
     private Follower follower;
 
@@ -55,30 +56,29 @@ public class redPedroAuto {
     }
 
     @Override
-    public void runOpMode() {
+    public void init() {
         Scheduler.reset();
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
         follower.update();
-
-        waitForStart();
+    }
+    public void start(){
         schedule(autoRoutine());
+    }
+    public void loop() {
+        follower.update();
+        Scheduler.execute();
 
-        while (opModeIsActive()) {
-            follower.update();
-            Scheduler.execute();
+        telemetry.addData("x", follower.pose().x());
+        telemetry.addData("y", follower.pose().y());
+        telemetry.addData("heading", follower.pose().heading());
 
-            telemetry.addData("x", follower.pose().x());
-            telemetry.addData("y", follower.pose().y());
-            telemetry.addData("heading", follower.pose().heading());
-
-            if (follower.currentPath() != null) {
-                telemetry.addData("Current path distance remaining", follower.distanceToEndpoint());
-                telemetry.addData("Path number", follower.pathIndex());
-            }
-
-            telemetry.update();
+        if (follower.currentPath() != null) {
+            telemetry.addData("Current path distance remaining", follower.distanceToEndpoint());
+            telemetry.addData("Path number", follower.pathIndex());
         }
+
+        telemetry.update();
     }
 
     public Path path1() {
